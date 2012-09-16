@@ -5,6 +5,7 @@ import java.lang.ref.WeakReference;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.RemoteException;
@@ -15,9 +16,11 @@ import android.view.ViewGroup;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.grid.fragments.ArtistsFragment;
+import com.andrew.apollo.tasks.GetBitmapTask;
 import com.andrew.apollo.tasks.LastfmGetArtistImages;
 import com.andrew.apollo.tasks.ViewHolderTask;
 import com.andrew.apollo.utils.ApolloUtils;
+import com.andrew.apollo.utils.ImageCache;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.views.ViewHolderGrid;
 import com.androidquery.AQuery;
@@ -67,7 +70,7 @@ public class ArtistAdapter extends SimpleCursorAdapter {
         holderReference.get().mViewHolderLineTwo.setText(numAlbums);
 
         holderReference.get().position = position;
-        if (aq.shouldDelay(position, view, parent, "")) {
+        /*if (aq.shouldDelay(position, view, parent, "")) {
             holderReference.get().mViewHolderImage.setImageDrawable(null);
         } else {
             // Check for missing artist images and cache them
@@ -79,7 +82,16 @@ public class ArtistAdapter extends SimpleCursorAdapter {
                         holderReference.get().mViewHolderImage).executeOnExecutor(
                         AsyncTask.THREAD_POOL_EXECUTOR, artistName);
             }
+        }*/
+
+        Bitmap bitmap = ImageCache.getInstance().getArtistBitmap(artistName);
+        if (bitmap == null) {
+            viewholder.mViewHolderImage.setImageDrawable(null);
+            new GetBitmapTask(ARTIST_IMAGE, artistName, viewholder.mViewHolderImage, 240, 240, mContext).execute();
+        } else {
+            viewholder.mViewHolderImage.setImageBitmap(bitmap);
         }
+
         // Now playing indicator
         long currentartistid = MusicUtils.getCurrentArtistId();
         long artistid = mCursor.getLong(ArtistsFragment.mArtistIdIndex);
