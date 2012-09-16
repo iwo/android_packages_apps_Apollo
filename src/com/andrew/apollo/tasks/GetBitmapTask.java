@@ -65,7 +65,8 @@ public abstract class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
 
         if (!found) {
             String url = getImageUrl();
-            if (url == null) {
+            if (url == null || url.isEmpty()) {
+                Log.w(TAG, "No URL received");
                 return null;
             }
             file = getFile(context, getExtension(url));
@@ -75,6 +76,7 @@ public abstract class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
                 Log.e(TAG, "Can't create parent directory");
                 return null;
             }
+            Log.v(TAG, "Downloading " + url + " to " + file.getAbsolutePath());
             downloadBitmap(url, file);
             Log.d(TAG, "Downloaded! " + file.exists());
         }

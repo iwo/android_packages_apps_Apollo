@@ -27,6 +27,12 @@ public class GetArtistImageTask extends GetBitmapTask {
     }
 
     @Override
+    protected Bitmap doInBackground(String... ignored) {
+        Log.v(TAG, "Get artist image for " + artist);
+        return super.doInBackground(ignored);
+    }
+
+    @Override
     protected File getFile(Context context, String extension) {
         String fileName = escapeForFileSystem(artist);
         if (fileName == null) {
@@ -42,13 +48,13 @@ public class GetArtistImageTask extends GetBitmapTask {
             PaginatedResult<Image> images = Artist.getImages(this.artist, 2, 1, LASTFM_API_KEY);
             Iterator<Image> iterator = images.getPageResults().iterator();
             if (!iterator.hasNext()) {
-                Log.e(TAG, "Error when retrieving artist image url for \"" + artist + "\" - empty result");
+                Log.w(TAG, "Error when retrieving artist image url for \"" + artist + "\" - empty result");
                 return null;
             }
             Image image = iterator.next();
             return image.getImageURL(ImageSize.LARGESQUARE); //TODO: ensure that there is an image available in the specified size
         } catch (Exception e) {
-            Log.e(TAG, "Error when retrieving artist image url for \"" + artist + "\"", e);
+            Log.w(TAG, "Error when retrieving artist image url for \"" + artist + "\"", e);
             return null;
         }
     }

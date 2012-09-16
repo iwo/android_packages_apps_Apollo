@@ -42,12 +42,22 @@ public class GetAlbumImageTask extends GetBitmapTask {
     }
 
     @Override
+    protected Bitmap doInBackground(String... ignored) {
+        Log.v(TAG, "Get album image for " + artist + " - " + album);
+        return super.doInBackground(ignored);
+    }
+
+    @Override
     protected String getImageUrl() {
         try {
             Album album = Album.getInfo(artist, this.album, LASTFM_API_KEY);
+            if (album == null) {
+                Log.w(TAG, "Album not found: " + artist + " - " + this.album);
+                return null;
+            }
             return album.getImageURL(ImageSize.LARGE); //TODO: ensure that there is an image available in the specified size
         } catch (Exception e) {
-            Log.e(TAG, "Error when retrieving album image url", e);
+            Log.w(TAG, "Error when retrieving album image url", e);
             return null;
         }
     }

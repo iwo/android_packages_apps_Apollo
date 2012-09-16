@@ -69,7 +69,7 @@ public class AlbumAdapter extends SimpleCursorAdapter {
 
         // Match positions
         holderReference.get().position = position;
-        if (aq.shouldDelay(position, view, parent, "")) {
+/*        if (aq.shouldDelay(position, view, parent, "")) {
             holderReference.get().mViewHolderImage.setImageDrawable(null);
         } else {
             // Check for missing album images and cache them
@@ -81,16 +81,15 @@ public class AlbumAdapter extends SimpleCursorAdapter {
                         holderReference.get().mViewHolderImage).executeOnExecutor(
                         AsyncTask.THREAD_POOL_EXECUTOR, albumName);
             }
-        }
+        }*/
 
-        /*Bitmap bitmap = ImageCache.getInstance().getAlbumBitmap(artistName, albumName);
+        Bitmap bitmap = ImageCache.getInstance().getAlbumBitmap(artistName, albumName);
         if (bitmap == null) {
             viewholder.mViewHolderImage.setImageDrawable(null);
             new GetAlbumImageTask(artistName, albumName, viewholder.mViewHolderImage, mContext).execute();
         } else {
             viewholder.mViewHolderImage.setImageBitmap(bitmap);
-        }*/
-
+        }
 
         // Now playing indicator
         long currentalbumid = MusicUtils.getCurrentAlbumId();
