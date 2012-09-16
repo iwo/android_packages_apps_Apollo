@@ -35,6 +35,7 @@ import com.andrew.apollo.activities.MusicLibrary;
 import com.andrew.apollo.service.ApolloService;
 import com.andrew.apollo.service.ServiceToken;
 import com.andrew.apollo.utils.ApolloUtils;
+import com.andrew.apollo.utils.ImageUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.utils.ThemeUtils;
 import com.androidquery.AQuery;
@@ -143,9 +144,7 @@ public class SettingsHolder extends PreferenceActivity implements ServiceConnect
         TextView mTrackName = (TextView)view.findViewById(R.id.action_bar_track_name);
         TextView mAlbumName = (TextView)view.findViewById(R.id.action_bar_album_name);
 
-        String url = ApolloUtils.getImageURL(MusicUtils.getAlbumName(), ALBUM_IMAGE, this);
-        AQuery aq = new AQuery(this);
-        mAlbumArt.setImageBitmap(aq.getCachedImage(url));
+        ImageUtils.setAlbumImage(MusicUtils.getArtistName(), MusicUtils.getAlbumName(), mAlbumArt, this);
 
         mTrackName.setText(MusicUtils.getTrackName());
         mAlbumName.setText(MusicUtils.getAlbumName());

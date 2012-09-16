@@ -1,31 +1,21 @@
 
 package com.andrew.apollo.adapters;
 
-import java.lang.ref.WeakReference;
-
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.ViewGroup;
-
 import com.andrew.apollo.R;
 import com.andrew.apollo.grid.fragments.AlbumsFragment;
-import com.andrew.apollo.tasks.GetAlbumImageTask;
-import com.andrew.apollo.tasks.GetArtistImageTask;
-import com.andrew.apollo.tasks.LastfmGetAlbumImages;
-import com.andrew.apollo.tasks.ViewHolderTask;
-import com.andrew.apollo.utils.ApolloUtils;
-import com.andrew.apollo.utils.ImageCache;
+import com.andrew.apollo.utils.ImageUtils;
 import com.andrew.apollo.utils.MusicUtils;
 import com.andrew.apollo.views.ViewHolderGrid;
 import com.androidquery.AQuery;
 
-import static com.andrew.apollo.Constants.ALBUM_IMAGE;
+import java.lang.ref.WeakReference;
 
 /**
  * @author Andrew Neal
@@ -67,29 +57,7 @@ public class AlbumAdapter extends SimpleCursorAdapter {
         String artistName = mCursor.getString(AlbumsFragment.mArtistNameIndex);
         holderReference.get().mViewHolderLineTwo.setText(artistName);
 
-        // Match positions
-        holderReference.get().position = position;
-/*        if (aq.shouldDelay(position, view, parent, "")) {
-            holderReference.get().mViewHolderImage.setImageDrawable(null);
-        } else {
-            // Check for missing album images and cache them
-            if (ApolloUtils.getImageURL(albumName, ALBUM_IMAGE, mContext) == null) {
-                new LastfmGetAlbumImages(mContext, null, 0).executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR, artistName, albumName);
-            } else {
-                new ViewHolderTask(null, holderReference.get(), position, mContext, 1, 1,
-                        holderReference.get().mViewHolderImage).executeOnExecutor(
-                        AsyncTask.THREAD_POOL_EXECUTOR, albumName);
-            }
-        }*/
-
-        Bitmap bitmap = ImageCache.getInstance().getAlbumBitmap(artistName, albumName);
-        if (bitmap == null) {
-            viewholder.mViewHolderImage.setImageDrawable(null);
-            new GetAlbumImageTask(artistName, albumName, viewholder.mViewHolderImage, mContext).execute();
-        } else {
-            viewholder.mViewHolderImage.setImageBitmap(bitmap);
-        }
+        ImageUtils.setAlbumImage(artistName, albumName, viewholder.mViewHolderImage, mContext);
 
         // Now playing indicator
         long currentalbumid = MusicUtils.getCurrentAlbumId();
