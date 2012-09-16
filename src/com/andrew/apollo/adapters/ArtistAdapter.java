@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.andrew.apollo.R;
 import com.andrew.apollo.grid.fragments.ArtistsFragment;
+import com.andrew.apollo.tasks.GetArtistImageTask;
 import com.andrew.apollo.tasks.GetBitmapTask;
 import com.andrew.apollo.tasks.LastfmGetArtistImages;
 import com.andrew.apollo.tasks.ViewHolderTask;
@@ -87,7 +88,7 @@ public class ArtistAdapter extends SimpleCursorAdapter {
         Bitmap bitmap = ImageCache.getInstance().getArtistBitmap(artistName);
         if (bitmap == null) {
             viewholder.mViewHolderImage.setImageDrawable(null);
-            new GetBitmapTask(ARTIST_IMAGE, artistName, viewholder.mViewHolderImage, 240, 240, mContext).execute();
+            new GetArtistImageTask(artistName, viewholder.mViewHolderImage, mContext).execute();
         } else {
             viewholder.mViewHolderImage.setImageBitmap(bitmap);
         }

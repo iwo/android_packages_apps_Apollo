@@ -28,4 +28,13 @@ public class ImageCache {
     public void setArtistBitmap(String name, Bitmap bitmap) {
         naiveCache.put(name, bitmap);
     }
+
+    public Bitmap getAlbumBitmap(String artistName, String albumName)
+    {
+        return naiveCache.get(artistName + " :: " + albumName);
+    }
+
+    public void setAlbumBitmap(String artistName, String albumName, Bitmap bitmap) {
+        naiveCache.put(artistName + " :: " + albumName, bitmap);
+    }
 }

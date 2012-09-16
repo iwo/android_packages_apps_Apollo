@@ -10,7 +10,6 @@ import com.andrew.apollo.lastfm.api.Artist;
 import com.andrew.apollo.lastfm.api.Image;
 import com.andrew.apollo.lastfm.api.ImageSize;
 import com.andrew.apollo.lastfm.api.PaginatedResult;
-import com.andrew.apollo.utils.ImageCache;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
@@ -21,35 +20,21 @@ import java.util.Iterator;
 
 import static com.andrew.apollo.Constants.LASTFM_API_KEY;
 
-public class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
+public abstract class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
 
     private final String TAG = "GetBitmapTask";
 
     private final String EXTENSION_JPG = ".jpg";
-
     private final String EXTENSION_PNG = ".png";
-
     private final String EXTENSION_GIF = ".gif";
 
     private final String[] IMAGE_EXTENSIONS = new String[]{EXTENSION_JPG, EXTENSION_PNG, EXTENSION_GIF};
 
     private WeakReference<ImageView> imageViewReference;
 
-    private String key;
-
-    private String name;
-
-    private int width;
-
-    private int height;
-
     private WeakReference<Context> contextReference;
 
-    public GetBitmapTask(String key, String name, ImageView imageView, int width, int height, Context context) {
-        this.key = key;
-        this.name = name;
-        this.width = width;
-        this.height = height;
+    public GetBitmapTask(ImageView imageView, Context context) {
         imageViewReference = new WeakReference<ImageView>(imageView);
         contextReference = new WeakReference<Context>(context);
 
@@ -67,9 +52,8 @@ public class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
         File file = null;
 
         for (String extension : IMAGE_EXTENSIONS) {
-            file = getArtistFile(context, name, extension);
+            file = getFile(context, extension);
             if (file == null) {
-                Log.e(TAG, "Can't create file name for: " + name);
                 return null;
             }
             if (file.exists()) {
@@ -80,12 +64,17 @@ public class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
         }
 
         if (!found) {
-            String url = getArtistsImageUrl(name);
-            Log.d(TAG, "URL received for\"" + name + "\": " + url);
+            String url = getImageUrl();
             if (url == null) {
                 return null;
             }
-            file = getArtistFile(context, name, getExtension(url));
+            file = getFile(context, getExtension(url));
+            File dir = file.getParentFile();
+            if (!dir.exists() && !dir.mkdirs())
+            {
+                Log.e(TAG, "Can't create parent directory");
+                return null;
+            }
             downloadBitmap(url, file);
             Log.d(TAG, "Downloaded! " + file.exists());
         }
@@ -101,27 +90,9 @@ public class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
         return bitmap;
     }
 
-    protected String getArtistsImageUrl(String artistName) {
-        try {
-            PaginatedResult<Image> artist = Artist.getImages(artistName, 2, 1, LASTFM_API_KEY);
-            Iterator<Image> iterator = artist.getPageResults().iterator();
-            if (!iterator.hasNext()) {
-                return null;
-            }
-            Image image = iterator.next();
-            return image.getImageURL(ImageSize.LARGESQUARE);
-        } catch (Exception e) {
-            return null;
-        }
-    }
+    protected abstract String getImageUrl();
 
-    protected File getArtistFile(Context context, String artistName, String extension) {
-        String fileName = escapeForFileSystem(artistName);
-        if (fileName == null) {
-            return null;
-        }
-        return new File(context.getExternalFilesDir(null), fileName);
-    }
+    protected abstract File getFile(Context context, String extension);
 
     protected String escapeForFileSystem(String name) {
         try {
@@ -175,9 +146,9 @@ public class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
+        super.onPostExecute(bitmap);
         ImageView imageView = imageViewReference.get();
         if (bitmap != null) {
-            ImageCache.getInstance().setArtistBitmap(name, bitmap);
             if (imageView != null && imageView.getTag() == this) {
                 imageView.setImageBitmap(bitmap);
             }
