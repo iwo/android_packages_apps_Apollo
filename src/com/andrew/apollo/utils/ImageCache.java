@@ -8,16 +8,8 @@ import java.util.Map;
 public class ImageCache {
 
     private Map<String, Bitmap> naiveCache = new HashMap<String, Bitmap>();
-    private static ImageCache instance;
 
-    public static ImageCache getInstance() {
-        if (instance == null) {
-            instance = new ImageCache();
-        }
-        return instance;
-    }
-
-    private ImageCache() {
+    public ImageCache() {
     }
 
     public Bitmap getArtistBitmap(String artistName)
@@ -36,5 +28,9 @@ public class ImageCache {
 
     public void setAlbumBitmap(String artistName, String albumName, Bitmap bitmap) {
         naiveCache.put(artistName + " :: " + albumName, bitmap);
+    }
+
+    public void clear() {
+        naiveCache.clear();
     }
 }

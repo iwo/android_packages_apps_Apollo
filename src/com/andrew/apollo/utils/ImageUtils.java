@@ -8,29 +8,17 @@ import com.andrew.apollo.tasks.GetArtistImageTask;
 
 public class ImageUtils {
 
-    public static boolean setArtistImage(String artist, ImageView imageView, Context context) {
-        Bitmap bitmap = ImageCache.getInstance().getArtistBitmap(artist);
-        if (bitmap == null) {
-            imageView.setImageDrawable(null);
-            new GetArtistImageTask(artist, imageView, context).execute();
-            return false;
-        }
-        imageView.setImageBitmap(bitmap);
-        return true;
+    private static ImageProvider imageProvider = new ImageProvider();
+
+    public static void setArtistImage(String artist, ImageView imageView, Context context) {
+        imageProvider.setArtistImage(artist, imageView, context);
     }
 
-    public static boolean setArtistOriginalImage(String artist, ImageView imageView, Context context) {
-        return setArtistImage(artist, imageView, context);
+    public static void setArtistOriginalImage(String artist, ImageView imageView, Context context) {
+        setArtistImage(artist, imageView, context);
     }
 
-    public static boolean setAlbumImage(String artist, String album, ImageView imageView, Context context) {
-        Bitmap bitmap = ImageCache.getInstance().getAlbumBitmap(artist, album);
-        if (bitmap == null) {
-            imageView.setImageDrawable(null);
-            new GetAlbumImageTask(artist, album, imageView, context).execute();
-            return false;
-        }
-        imageView.setImageBitmap(bitmap);
-        return true;
+    public static void setAlbumImage(String artist, String album, ImageView imageView, Context context) {
+        imageProvider.setAlbumImage(artist, album, imageView, context);
     }
 }

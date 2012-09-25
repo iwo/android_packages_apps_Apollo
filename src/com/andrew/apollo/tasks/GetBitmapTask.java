@@ -5,20 +5,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-import com.andrew.apollo.lastfm.api.Artist;
-import com.andrew.apollo.lastfm.api.Image;
-import com.andrew.apollo.lastfm.api.ImageSize;
-import com.andrew.apollo.lastfm.api.PaginatedResult;
 
 import java.io.*;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Iterator;
-
-import static com.andrew.apollo.Constants.LASTFM_API_KEY;
 
 public abstract class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
 
@@ -30,15 +22,16 @@ public abstract class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
 
     private final String[] IMAGE_EXTENSIONS = new String[]{EXTENSION_JPG, EXTENSION_PNG, EXTENSION_GIF};
 
-    private WeakReference<ImageView> imageViewReference;
+    private WeakReference<OnBitmapReadyListener> listenerReference;
 
     private WeakReference<Context> contextReference;
 
-    public GetBitmapTask(ImageView imageView, Context context) {
-        imageViewReference = new WeakReference<ImageView>(imageView);
-        contextReference = new WeakReference<Context>(context);
+    private String tag;
 
-        imageView.setTag(this);
+    public GetBitmapTask(OnBitmapReadyListener listener, String tag, Context context) {
+        listenerReference = new WeakReference<OnBitmapReadyListener>(listener);
+        contextReference = new WeakReference<Context>(context);
+        this.tag = tag;
     }
 
     @Override
@@ -149,11 +142,15 @@ public abstract class GetBitmapTask extends AsyncTask<String, Integer, Bitmap> {
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
-        ImageView imageView = imageViewReference.get();
+        OnBitmapReadyListener listener = listenerReference.get();
         if (bitmap != null) {
-            if (imageView != null && imageView.getTag() == this) {
-                imageView.setImageBitmap(bitmap);
+            if (listener != null) {
+                listener.bitmapReady(bitmap, tag);
             }
         }
+    }
+
+    public interface OnBitmapReadyListener {
+        public void bitmapReady(Bitmap bitmap, String tag);
     }
 }

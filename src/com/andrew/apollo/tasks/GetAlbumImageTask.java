@@ -20,8 +20,8 @@ public class GetAlbumImageTask extends GetBitmapTask {
 
     private String album;
 
-    public GetAlbumImageTask(String artist, String album, ImageView imageView, Context context) {
-        super(imageView, context);
+    public GetAlbumImageTask(String artist, String album, OnBitmapReadyListener listener, String tag, Context context) {
+        super(listener, tag, context);
         this.artist = artist;
         this.album = album;
     }
@@ -60,11 +60,5 @@ public class GetAlbumImageTask extends GetBitmapTask {
             Log.w(TAG, "Error when retrieving album image url", e);
             return null;
         }
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-        super.onPostExecute(bitmap);
-        ImageCache.getInstance().setAlbumBitmap(artist, album, bitmap);
     }
 }

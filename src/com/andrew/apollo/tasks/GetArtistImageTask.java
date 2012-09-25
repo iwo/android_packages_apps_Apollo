@@ -21,8 +21,8 @@ public class GetArtistImageTask extends GetBitmapTask {
 
     private String artist;
 
-    public GetArtistImageTask(String artist, ImageView imageView, Context context) {
-        super(imageView, context);
+    public GetArtistImageTask(String artist, OnBitmapReadyListener listener, String tag, Context context) {
+        super(listener, tag, context);
         this.artist = artist;
     }
 
@@ -57,11 +57,5 @@ public class GetArtistImageTask extends GetBitmapTask {
             Log.w(TAG, "Error when retrieving artist image url for \"" + artist + "\"", e);
             return null;
         }
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-        super.onPostExecute(bitmap);
-        ImageCache.getInstance().setArtistBitmap(artist, bitmap);
     }
 }
